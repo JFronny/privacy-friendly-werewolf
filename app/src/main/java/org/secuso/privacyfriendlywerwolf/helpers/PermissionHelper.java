@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.net.wifi.SoftApConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
@@ -45,13 +46,18 @@ public class PermissionHelper {
         } else return null;
     }
 
-    public static String getHotspotPassphrase() {
+    public static @Nullable String getHotspotPassphrase() {
         if (hotspotReservation == null) return null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return hotspotReservation.getSoftApConfiguration().getPassphrase();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return hotspotReservation.getWifiConfiguration().preSharedKey;
         } else return null;
+    }
+
+    public static @Nullable String getHotspotQR() {
+        if (hotspotReservation == null) return null;
+        return "WIFI:T:WPA;S:" + getHotspotSSID() + ";P:" + getHotspotPassphrase() + ";H:;";
     }
 
     public static void showWifiAlert(final Activity context) {

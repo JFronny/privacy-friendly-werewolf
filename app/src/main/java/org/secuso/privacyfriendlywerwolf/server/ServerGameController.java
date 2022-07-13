@@ -252,20 +252,16 @@ public class ServerGameController {
     }
 
     public void startServer() {
-
         serverHandler.startServer();
     }
 
 
     public void addPlayer(Player player) {
-
-
         if (ContextUtil.isDuplicateName(player.getPlayerName())) {
             player.setName(player.getPlayerName() + "_" + duplicate_player_indicator++);
         }
         gameContext.addPlayer(player);
         startHostActivity.renderUI();
-
     }
 
     /**

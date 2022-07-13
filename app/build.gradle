@@ -45,6 +45,7 @@ dependencies {
     // compile 'com.github.kenglxn.QRGen:android:2.2.0'
     implementation 'com.koushikdutta.async:androidasync:2.2.1'
     implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.google.zxing:core:3.2.1'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.powermock:powermock:1.6.5'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.5'

@@ -9,9 +9,6 @@
     tools:openDrawer="start">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
@@ -19,8 +16,8 @@
 
         <include layout="@layout/toolbar"/>
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -31,49 +28,62 @@
             tools:context=".activity.StartHostActivity"
             style="?android:buttonBarStyle">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/startgame_waiting_for_players"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/connection_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"/>
-
-            <!-- <ScrollView
+            <ScrollView
+                android:id="@+id/nestedScrollView2"
                 android:layout_width="match_parent"
-                android:layout_height="300dp" >
+                android:layout_height="match_parent"
+                android:layout_marginBottom="80dp"
+                app:layout_constraintBottom_toTopOf="@+id/btn_start"
+                tools:layout_editor_absoluteX="16dp">
 
-                <TextView
-                    android:id="@+id/msg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </ScrollView> -->
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <ListView
-                android:id="@+id/host_player_list"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:drawSelectorOnTop="false"
-                android:layout_weight="1"
-                android:layout_alignParentStart="true" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/startgame_waiting_for_players"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/connection_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp" />
+
+                    <ImageView
+                        android:id="@+id/qr_view"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center_horizontal"
+                        android:visibility="gone" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/host_player_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentStart="true"
+                        android:layout_weight="1"
+                        android:drawSelectorOnTop="false"
+                        android:orientation="vertical" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </ScrollView>
 
             <Button
-                android:text="@string/startgame_start_game"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:id="@+id/btn_start"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:background="@drawable/button_fullwidth"
+                android:text="@string/startgame_start_game"
+                android:textColor="@color/white"
                 android:textSize="25sp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:id="@+id/btn_start" />
-        </LinearLayout>
+                app:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
+                tools:layout_editor_absoluteX="46dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView

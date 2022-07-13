@@ -1,16 +1,24 @@
 package org.secuso.privacyfriendlywerwolf.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.Toolbar;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 import org.secuso.privacyfriendlywerwolf.R;
 import org.secuso.privacyfriendlywerwolf.context.GameContext;
@@ -36,7 +44,7 @@ import java.util.List;
  */
 public class StartHostActivity extends BaseActivity {
     private ArrayList<String> stringPlayers;
-    private ArrayAdapter<String> playerAdapter;
+    private LinearLayoutCompat list;
 
     /**
      * statics
@@ -59,9 +67,8 @@ public class StartHostActivity extends BaseActivity {
         serverGameController.destroy();
 
         setContentView(R.layout.activity_start_host);
-        TextView connection_info = findViewById(R.id.connection_info);
 
-        connection_info.setText(getConnectionInfo());
+        applyConnectionInfo();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.startgame_subtitle);
@@ -108,15 +115,11 @@ public class StartHostActivity extends BaseActivity {
 
         }.init(this));
 
-
-        ListView list = findViewById(R.id.host_player_list);
-
+        list = findViewById(R.id.host_player_list);
 
         stringPlayers = new ArrayList<>();
         fillStringPlayers();
 
-        playerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringPlayers);
-        list.setAdapter(playerAdapter);
         Intent intent = getIntent();
         serverGameController.prepareServerPlayer(intent.getStringExtra(Constants.PLAYERNAME_PUTEXTRA));
     }
@@ -145,22 +148,49 @@ public class StartHostActivity extends BaseActivity {
      */
     public void renderUI() {
         fillStringPlayers();
-        runOnUiThread(() -> playerAdapter.notifyDataSetChanged());
-
+        runOnUiThread(() -> {
+            list.removeAllViews();
+            for (String stringPlayer : stringPlayers) {
+                TextView view = (TextView) getLayoutInflater().inflate(android.R.layout.simple_list_item_1, null);
+                view.setText(stringPlayer);
+                list.addView(view);
+            }
+        });
     }
 
     /**
      * Get the info message containing details for clients to connect to this host
-     *
-     * @return the IP
      */
-    private String getConnectionInfo() {
+    private void applyConnectionInfo() {
+        TextView connection_info = findViewById(R.id.connection_info);
+        ImageView qr_view = findViewById(R.id.qr_view);
+
         String result = "";
         if (PermissionHelper.getHotspotSSID() != null) {
-            result += getResources().getString(R.string.startgame_hotspot_details, PermissionHelper.getHotspotSSID(), PermissionHelper.getHotspotPassphrase());
+            String ssid = PermissionHelper.getHotspotSSID();
+            String passphrase = PermissionHelper.getHotspotPassphrase();
+            result += getResources().getString(R.string.startgame_hotspot_details, ssid, passphrase);
+
+            qr_view.setVisibility(View.VISIBLE);
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            try {
+                BitMatrix bitMatrix = qrCodeWriter.encode(PermissionHelper.getHotspotQR(), BarcodeFormat.QR_CODE, 200, 200);
+                Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.RGB_565);
+                for (int x = 0; x < 200; x++) {
+                    for (int y = 0; y < 200; y++) {
+                        bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                    }
+                }
+                qr_view.setImageBitmap(bitmap);
+            } catch (WriterException e) {
+                Log.e(TAG, "Could not create QR-Code bitmap", e);
+                qr_view.setVisibility(View.GONE);
+            }
+        } else {
+            qr_view.setVisibility(View.GONE);
         }
         if (PermissionHelper.getHotspotSSID() == null && !PermissionHelper.isWifiEnabled(this)) {
-            return getResources().getString(R.string.text_view_enable_wifi);
+            connection_info.setText(getResources().getString(R.string.text_view_enable_wifi));
         } else {
             try {
                 Enumeration<NetworkInterface> enumNetworkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -180,8 +210,8 @@ public class StartHostActivity extends BaseActivity {
                 e.printStackTrace();
                 result += "Something Wrong! " + e + "\n";
             }
+            connection_info.setText(result);
         }
-        return result;
     }
 
     /**
