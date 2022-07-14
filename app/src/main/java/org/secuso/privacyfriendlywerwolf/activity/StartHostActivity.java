@@ -75,13 +75,10 @@ public class StartHostActivity extends BaseActivity {
 
         PermissionHelper.showWifiAlert(this);
 
-
         // start the server
         serverGameController.startServer();
 
-
         Button buttonStart = findViewById(R.id.btn_start);
-
 
         // user clicks the button to start the game
         buttonStart.setOnClickListener(new View.OnClickListener() {
@@ -109,10 +106,7 @@ public class StartHostActivity extends BaseActivity {
                             .setCancelable(false)
                             .show();
                 }
-
             }
-
-
         }.init(this));
 
         list = findViewById(R.id.host_player_list);
